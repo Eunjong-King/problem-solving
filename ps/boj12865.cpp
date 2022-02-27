@@ -1,44 +1,30 @@
-#include <cstdio>
-#include <cstring>
-#include <map>
+#include <iostream>
 using namespace std;
 
+int dp[101][100001];
+int weight[101];
+int value[101];
+
 int main(void){
-    int N, K;
-    scanf("%d %d", &N, &K);
-    int arr[100100];
-    fill_n(arr, 100100, 0);
+    int N, K, W, V;
+    cin >> N >> K;
 
-    map<int, int> m;
-    int W, V;
-    for(int i=0; i<N; i++){
-        scanf("%d %d", &W, &V);
-        V = (arr[W] > V) ? arr[W] : V;
-
-        if(V==0){
-            continue;
-        }
-        
-        arr[W] = V;
-        m[W] = V;
+    for(int i=1; i<=N; i++){
+        cin >> weight[i] >> value[i];
     }
-    
-    int max_V = 0;
-    for(int i=1; i<K+1; i++){
-        if(arr[i] == 0){
-            continue;
-        }
-        for(auto p : m){
-            if(i+p.first <= K && (arr[i+p.first] < arr[i] + p.second)){
-                arr[i+p.first] = arr[i] + p.second;
+
+    for(int i=1; i<=N; i++){
+        for(int j=1; j<=K; j++){
+            if(j < weight[i]){
+                dp[i][j] = dp[i-1][j];
+            }
+            else{
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-weight[i]]+value[i]);
             }
         }
-        if(arr[i] != 0 && arr[i] > max_V){
-            max_V = arr[i];
-        }
     }
 
-    printf("%d\n", max_V);
+    cout << dp[N][K] << endl;
 
     return 0;
 }
